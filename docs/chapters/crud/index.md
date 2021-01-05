@@ -24,7 +24,7 @@ Unfortunately there are some limitations to what Jina can do for the moment. The
 
 1. **Update flows**
 
-   In the context of Flows with segmenters and chunkers, a Document may end up being split into chunks. Currently, the Update request will not work for these. You can still perform a replace operation, by first deleting the document (which will delete its chunks) and then adding the new version.
+   In the context of Flows with segmenters and chunkers, a Document may end up being split into chunks. Currently, the Update request will not work for these. You will need to manually remove the chunks by their `ids`. Then you can remove the parent document as well, by its `id`. Finally, you can index the new document, with its new contents (and thus new, different child chunks).
 
 1. **Sharding, replicas**
 
