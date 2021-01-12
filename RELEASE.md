@@ -9,31 +9,79 @@
 [![Release CD](https://github.com/jina-ai/jina/workflows/Release%20CD/badge.svg)](https://github.com/jina-ai/jina/actions?query=workflow%3A%22Release+CD%22)
 [![API Schema](https://github.com/jina-ai/jina/workflows/API%20Schema/badge.svg)](https://api.jina.ai/)
 
+## PyPi Versioning 
 
-We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`.
+We follow the [semantic versioning](https://semver.org/), numbered with `x.y.z`. By default, `pip install jina` always install the latest release. To install a particular version from PyPi, please use:
 
-## Docker Image Tag Explained
+```bash
+pip install jina==x.y.z
+```
 
-| Tag | Description |
-| --- | --- |
-| `latest` | the last Sunday release, contains the bare minimum of to run Jina framework. |
-| `x.y.z` | (previous) Sunday release. |
-| `devel` | the development version corresponds to the latest master, it extends `latest` by adding required packages for [Dashboard](https://github.com/jina-ai/dashboard). |
-| `x.y.z-devel` | (previous) `devel` version of `x.y.z` |
-| `x.y` | shortcut alias to the last `x.y.z` release |
+## Docker Image Versioning
 
-### Which Version to Use?
+The docker image name starts with `jinaai/jina` followed by a tag composed as three parts:
 
-- Use `latest`, if you want to use barebone Jina framework and extend it with your own modules/plugins.
-- Use `devel`, if you want to use [Dashboard](https://github.com/jina-ai/dashboard) to get more insights about the logs and flows.
+```text
+jinaai/jina:{version}{python_version}{extra}
+```
 
-### Docker Image Size of Different Versions
+- `{version}`: The version of Jina. Possible values:
+    - `latest`: the last release;
+    - `master`: the master branch of `jina-ai/jina` repository;
+    - `x.y.z`: the release of a particular version;
+    - `x.y`: the alias to the last `x.y.z` patch release, i.e. `x.y` = `x.y.max(z)`;
+- `{python_version}`: The Python version of the image. Possible values: 
+    - ` `, `-py37`: Python 3.7;
+    - `-py38` for Python 3.8;
+- `{extra}`: the extra dependency installed along with Jina. Possible values:
+    - ` `: Jina is installed inside the image via `pip install jina`;
+    - `-devel`: Jina is installed inside the image via `pip install jina[devel]`;
+    - `-daemon`: Jina is installed inside the image via `pip install jina[dameon]` along with `fluentd`; **and the entrypoint is set to `jinad`**.
 
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/jinaai/jina/latest?label=jinaai%2Fjina%3Alatest&logo=docker)
+Examples:
 
-![Docker Image Size (tag)](https://img.shields.io/docker/image-size/jinaai/jina/devel?label=jinaai%2Fjina%3Adevel&logo=docker)
+- `0.9.6`: the `0.9.6` release with Python 3.7 and the entrypoint of `jina`.
+- `latest-py38-daemon`: the latest release with Python 3.8 base and the entrypoint of Jina daemon.
+- `latest`: the latest release with Python 3.7 and the entrypoint of `jina`
+- `master`: the master with Python 3.7 and the entrypoint of `jina`
 
-The last update image is ![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?label=last%20update&logo=docker&sort=date)  
+### Do I need `-devel`?
+
+Use `-devel` image, if you want to use:
+- REST interface
+- Jina daemon (use `-daemon`)
+- Dashboard
+- Log-streaming 
+
+### Image Alias & Update
+
+| Timing | Affected tags | 
+| --- | --- | 
+| On Master Merge | `jinaai/jina:master{python_version}{extra}` |
+| On `x.y.z` release | `jinaai/jina:latest{python_version}{extra}`, `jinaai/jina:x.y.z{python_version}{extra}`, `jinaai/jina:x.y{python_version}{extra}` |
+
+, where
+  - `{python_version} = ["-py37", "-py38"]`
+  - `{extra} = ["", "-devel", "-daemon"]`
+
+
+
+### Image Size of Different Versions
+
+|Image Size|
+| ---|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest?label=jinaai%2Fjina%3Alatest&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-devel?label=jinaai%2Fjina%3Alatest-devel&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-daemon?label=jinaai%2Fjina%3Alatest-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py38-devel?label=jinaai%2Fjina%3Alatest-py38-devel&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py38-daemon?label=jinaai%2Fjina%3Alatest-py38-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master?label=jinaai%2Fjina%3Amaster&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-devel?label=jinaai%2Fjina%3Amaster-devel&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-daemon?label=jinaai%2Fjina%3Amaster-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-devel?label=jinaai%2Fjina%3Amaster-py38-devel&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-daemon?label=jinaai%2Fjina%3Amaster-py38-daemon&logo=docker)|
+
+The last update image is ![Docker Image Version (latest semver)](https://img.shields.io/docker/v/jinaai/jina?label=last%20update&logo=docker&sort=date) 
 
 ## Master Update
 
@@ -58,7 +106,3 @@ On every Sunday 23pm, a patch release is scheduled:
 - bump the master to `x.y.(z+1)` and commit a `chore(version)` push.
 
 The current master version should always be one version ahead of `git tag -l | sort -V | tail -n1`.
-
-## Nightly Release
-
-Every midnight at 0:00, the docker image tagged with `x.y.z-devel` will be rebuilt on all platforms, include: linux/amd64, linux/arm64, linux/ppc64le, linux/386, linux/arm/v7, linux/arm/v6.
